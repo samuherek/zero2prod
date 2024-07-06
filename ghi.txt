@@ -1,0 +1,17 @@
+cargo watch -x check 
+cargo wacth -x check -x text -x run
+
+tarpaulin
+
+cargo clippy -> install cargo clippy
+cargo expand -> cargo isntall cargo-expand
+
+--
+#!/usr/bin/env bash
+set -x
+set -eo pipefail
+--
+
+
+export DATABASE_URL=postgres://postgres:password@127.0.0.1:5432/newsletter
+pgAdmin
