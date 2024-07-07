@@ -65,7 +65,7 @@ jobs:
   clippy: 
     name: Clippy
     runs-on: ubuntu-latest
-    servcies:
+    services:
       postgres:
         image: postgres:14
         env: 
