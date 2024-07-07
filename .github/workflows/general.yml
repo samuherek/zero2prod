@@ -30,7 +30,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Rust Cache Action
-        users: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@v2
         with:
           key: sqlx-${{ env.SQLX_VERSION }}
 
@@ -81,7 +81,7 @@ jobs:
           components: clippy
       - uses: Swatinem/rust-cache@v2
         with: 
-        key: sqlx-${{ env.SQLX_VERSION }}
+          key: sqlx-${{ env.SQLX_VERSION }}
       - name: Install sqlx-cli
         run: 
           cargo install sqlx-cli
