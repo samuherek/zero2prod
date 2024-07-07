@@ -5,6 +5,8 @@ use zero2prod::startup::run;
 #[tokio::main]
 
 async fn main() -> std::io::Result<()> {
-    let listener = TcpListener::bind("127.0.0.1:8000").expect("Failied to bind random port.");
+    let configuration = get_configuration().expect("Faield to read the configuration.");
+    let address = format!("127.0.0.1:{}", configuration.application_port);
+    let listener = TcpListener::bind(address)?;
     run(listener)?.await
 }
