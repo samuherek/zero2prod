@@ -17,3 +17,7 @@ export DATABASE_URL=postgres://postgres:password@127.0.0.1:5432/newsletter
 pgAdmin
 
 cargo install cargo-udeps
+
+-- prepare the offline database in sqlx
+cargo sqlx prepare --merged
+
