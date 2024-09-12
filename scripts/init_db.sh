@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+    env: 
 set -x
 set -eo pipefail
 
