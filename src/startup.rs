@@ -55,7 +55,6 @@ impl Application {
 
 pub struct ApplicationBaseUrl(pub String);
 
-
 pub fn run(
     listener: TcpListener,
     db_pool: PgPool,
