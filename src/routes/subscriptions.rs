@@ -8,9 +8,10 @@ use chrono::Utc;
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 use sqlx::{Executor, PgPool, Postgres, Transaction};
+use std::convert::{TryFrom, TryInto};
 use uuid::Uuid;
 
-#[derive(Debug, serde::Deserialize)]
+#[derive(serde::Deserialize)]
 pub struct FormData {
     email: String,
     name: String,
@@ -55,8 +56,8 @@ impl ResponseError for SubscribeError {
     fields(
         subscriber_email = %form.email,
         subscriber_name = %form.name
-        )
-    )]
+    )
+)]
 pub async fn subscribe(
     form: web::Form<FormData>,
     pool: web::Data<PgPool>,
@@ -67,14 +68,14 @@ pub async fn subscribe(
     let mut transaction = pool
         .begin()
         .await
-        .context("Failed to acquire a Postgres connection from the poll.")?;
+        .context("Failed to acquire a Postgres connection from the pool")?;
     let subscriber_id = insert_subscriber(&mut transaction, &new_subscriber)
         .await
         .context("Failed to insert new subscriber in the database.")?;
     let subscription_token = generate_subscription_token();
     store_token(&mut transaction, subscriber_id, &subscription_token)
         .await
-        .context("Failed to store the confirmation token for a new subsriber")?;
+        .context("Failed to store the confirmation token for a new subscriber.")?;
     transaction
         .commit()
         .await
@@ -87,7 +88,6 @@ pub async fn subscribe(
     )
     .await
     .context("Failed to send a confirmation email.")?;
-
     Ok(HttpResponse::Ok().finish())
 }
 
@@ -118,8 +118,7 @@ pub async fn send_confirmation_email(
         confirmation_link
     );
     let html_body = format!(
-        "Welcome to our newsletter!<br />\
-        Click <a href=\"{}\">here</a> to confirm your subscription.",
+        "Welcome to our newsletter!<br />Click <a href=\"{}\">here</a> to confirm your subscription.",
         confirmation_link
     );
     email_client
@@ -138,9 +137,9 @@ pub async fn insert_subscriber(
     let subscriber_id = Uuid::new_v4();
     let query = sqlx::query!(
         r#"
-        INSERT INTO subscriptions (id, email, name, subscribed_at, status)
-        VALUES ($1, $2, $3, $4, 'pending_confirmation')
-        "#,
+    INSERT INTO subscriptions (id, email, name, subscribed_at, status)
+    VALUES ($1, $2, $3, $4, 'pending_confirmation')
+            "#,
         subscriber_id,
         new_subscriber.email.as_ref(),
         new_subscriber.name.as_ref(),
@@ -160,7 +159,10 @@ pub async fn store_token(
     subscription_token: &str,
 ) -> Result<(), StoreTokenError> {
     let query = sqlx::query!(
-        r#"INSERT INTO subscription_tokens (subscription_token, subscriber_id) VALUES ($1, $2)"#,
+        r#"
+    INSERT INTO subscription_tokens (subscription_token, subscriber_id)
+    VALUES ($1, $2)
+        "#,
         subscription_token,
         subscriber_id
     );
@@ -186,7 +188,7 @@ impl std::fmt::Display for StoreTokenError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "A database error was encountered while trying to store a subscription token."
+            "A database failure was encountered while trying to store a subscription token."
         )
     }
 }
@@ -196,9 +198,12 @@ pub fn error_chain_fmt(
     f: &mut std::fmt::Formatter<'_>,
 ) -> std::fmt::Result {
     writeln!(f, "{}\n", e)?;
-    let current = e.source();
+    let mut current = e.source();
     while let Some(cause) = current {
         writeln!(f, "Caused by:\n\t{}", cause)?;
+        current = cause.source();
     }
     Ok(())
 }
+
+
