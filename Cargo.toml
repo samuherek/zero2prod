@@ -32,6 +32,8 @@ claims = "0.7.1"
 validator = "0.18.1"
 linkify = "0.10.0"
 rand = "0.8.5"
+thiserror = "1.0.63"
+anyhow = "1.0.88"
 
 [dependencies.reqwest]
 version = "0.11"
