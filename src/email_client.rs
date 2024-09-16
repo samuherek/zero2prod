@@ -30,7 +30,7 @@ impl EmailClient {
 
     pub async fn send_email(
         &self,
-        recipient: SubscriberEmail,
+        recipient: &SubscriberEmail,
         subject: &str,
         html_content: &str,
         text_content: &str,
@@ -44,8 +44,7 @@ impl EmailClient {
             text_body: text_content,
             message_stream: &self.group,
         };
-        self
-            .http_client
+        self.http_client
             .post(&url)
             .header(
                 "X-Postmark-Server-Token",
@@ -138,7 +137,7 @@ mod tests {
             .await;
 
         let outcome = email_client
-            .send_email(email(), &subject(), &content(), &content())
+            .send_email(&email(), &subject(), &content(), &content())
             .await;
 
         claims::assert_ok!(outcome);
@@ -157,7 +156,7 @@ mod tests {
             .await;
 
         let outcome = email_client
-            .send_email(email(), &subject(), &content(), &content())
+            .send_email(&email(), &subject(), &content(), &content())
             .await;
 
         claims::assert_err!(outcome);
@@ -176,7 +175,7 @@ mod tests {
             .await;
 
         let outcome = email_client
-            .send_email(email(), &subject(), &content(), &content())
+            .send_email(&email(), &subject(), &content(), &content())
             .await;
 
         claims::assert_err!(outcome);
@@ -193,7 +192,7 @@ mod tests {
             .mount(&mock_server)
             .await;
         let outcome = email_client
-            .send_email(email(), &subject(), &content(), &content())
+            .send_email(&email(), &subject(), &content(), &content())
             .await;
         claims::assert_ok!(outcome);
     }
