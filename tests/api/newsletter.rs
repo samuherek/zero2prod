@@ -179,4 +179,5 @@ async fn invalid_password_is_rejected() {
     assert_eq!(
         r#"Basic realm="publish""#,
         response.headers()["WWW-Authenticate"]
-    );}
+    );
+}
