@@ -1,5 +1,6 @@
 use crate::startup::HmacSecret;
 use actix_web::{http::header::ContentType, web, HttpResponse};
+use actix_web_flash_messages::IncomingFlashMessages;
 use hmac::{Hmac, Mac};
 use secrecy::ExposeSecret;
 
@@ -26,6 +27,7 @@ impl QueryParams {
 pub async fn login_form(
     query: Option<web::Query<QueryParams>>,
     secret: web::Data<HmacSecret>,
+    _flash_messages: IncomingFlashMessages,
 ) -> HttpResponse {
     let error_html = match query {
         None => "".into(),
@@ -75,4 +77,3 @@ pub async fn login_form(
 </html>"#,
         ))
 }
-
