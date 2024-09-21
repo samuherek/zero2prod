@@ -3,7 +3,8 @@ use crate::utils::{e500, see_other};
 use actix_web::body::MessageBody;
 use actix_web::dev::{ServiceRequest, ServiceResponse};
 use actix_web::error::InternalError;
-use actix_web::{FromRequest, HttpMessage};
+use actix_web::FromRequest;
+use actix_web::HttpMessage;
 use actix_web_lab::middleware::Next;
 use std::ops::Deref;
 use uuid::Uuid;
@@ -41,7 +42,7 @@ pub async fn reject_anonymous_users(
         }
         None => {
             let response = see_other("/login");
-            let e = anyhow::anyhow!("The user has not logged in");
+            let e = anyhow::anyhow!("The user has not l9ogged in");
             Err(InternalError::from_response(e, response).into())
         }
     }

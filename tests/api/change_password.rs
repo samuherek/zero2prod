@@ -115,4 +115,3 @@ async fn changing_password_works() {
     let response = app.post_login(&login_body).await;
     assert_is_redirect_to(&response, "/admin/dashboard");
 }
-
